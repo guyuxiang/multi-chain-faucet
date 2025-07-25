@@ -1,0 +1,45 @@
+{
+  "http_port": 8080,
+  "proxy_count": 0,
+  "hcaptcha_sitekey": "",
+  "hcaptcha_secret": "",
+  "default_network": "linea-sepolia",
+  "networks": [
+    {
+      "name": "polygon-amoy",
+      "provider": "",
+      "private_key": "",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.1,
+      "interval": 1440
+    },
+    {
+      "name": "polygon",
+      "provider": "",
+      "private_key": "",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.1,
+      "interval": 1440
+    },
+    {
+      "name": "sepolia",
+      "provider": "",
+      "private_key": "",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.05,
+      "interval": 1440
+    },
+    {
+      "name": "linea-sepolia",
+      "provider": "",
+      "private_key": "",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.05,
+      "interval": 1440
+    }
+  ]
+}
