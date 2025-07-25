@@ -15,15 +15,6 @@
       "interval": 1440
     },
     {
-      "name": "polygon",
-      "provider": "",
-      "private_key": "",
-      "keystore": "",
-      "key_pass": "",
-      "payout": 0.1,
-      "interval": 1440
-    },
-    {
       "name": "sepolia",
       "provider": "",
       "private_key": "",
