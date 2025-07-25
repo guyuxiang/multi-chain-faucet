@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/negroni/v3"
 
-	"github.com/chainflag/eth-faucet/internal/chain"
-	"github.com/chainflag/eth-faucet/internal/config"
-	"github.com/chainflag/eth-faucet/web"
+	"github.com/guyuxiang/multi-chain-faucet/internal/chain"
+	"github.com/guyuxiang/multi-chain-faucet/internal/config"
+	"github.com/guyuxiang/multi-chain-faucet/web"
 )
 
 // MultiChainServer manages multiple blockchain networks

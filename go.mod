@@ -1,4 +1,4 @@
-module github.com/chainflag/eth-faucet
+module github.com/guyuxiang/multi-chain-faucet
 
 go 1.17
 
