@@ -1,6 +1,6 @@
-# eth-faucet-web
+# multi-chain-faucet-web
 
-This is the Frontend of [eth-faucet](https://github.com/guyuxiang/multi-chain-faucet) built with Svelte in Vite.
+This is the Frontend of [multi-chain-faucet](https://github.com/guyuxiang/multi-chain-faucet) built with Svelte in Vite.
 
 ## Get started
 
