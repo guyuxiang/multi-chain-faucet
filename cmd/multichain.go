@@ -15,26 +15,6 @@ import (
 	"github.com/guyuxiang/multi-chain-faucet/internal/server"
 )
 
-// MultiChainConfigFile represents the structure of the multi-chain configuration file
-type MultiChainConfigFile struct {
-	HTTPPort        int                 `json:"http_port"`
-	ProxyCount      int                 `json:"proxy_count"`
-	HcaptchaSiteKey string              `json:"hcaptcha_sitekey"`
-	HcaptchaSecret  string              `json:"hcaptcha_secret"`
-	DefaultNetwork  string              `json:"default_network"`
-	Networks        []NetworkConfigFile `json:"networks"`
-}
-
-type NetworkConfigFile struct {
-	Name       string  `json:"name"`
-	Provider   string  `json:"provider"`
-	PrivateKey string  `json:"private_key"`
-	Keystore   string  `json:"keystore"`
-	KeyPass    string  `json:"key_pass"`
-	Payout     float64 `json:"payout"`
-	Interval   int     `json:"interval"`
-}
-
 // ExecuteMultiChain starts the multi-chain faucet server
 func ExecuteMultiChain(configPath string) {
 	// Load configuration
@@ -59,16 +39,9 @@ func ExecuteMultiChain(configPath string) {
 
 // loadMultiChainConfig loads configuration from JSON file
 func loadMultiChainConfig(configPath string) (*config.MultiChainConfig, error) {
-	// Read config file
-	data, err := os.ReadFile(configPath)
+	fileConfig, err := config.LoadMultiChainConfigFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	// Parse JSON
-	var fileConfig MultiChainConfigFile
-	if err := json.Unmarshal(data, &fileConfig); err != nil {
-		return nil, fmt.Errorf("failed to parse config JSON: %w", err)
+		return nil, err
 	}
 
 	// Create multi-chain config
@@ -80,16 +53,21 @@ func loadMultiChainConfig(configPath string) (*config.MultiChainConfig, error) {
 
 	// Add networks
 	for _, netConfig := range fileConfig.Networks {
+		networkConfig, err := config.BuildNetworkConfigFromFile(netConfig)
+		if err != nil {
+			return nil, fmt.Errorf("invalid network %s: %w", netConfig.Name, err)
+		}
+
 		chainInput := config.ChainConfigInput{
 			Network:  netConfig.Name,
 			Provider: netConfig.Provider,
 			Payout:   netConfig.Payout,
 			Interval: netConfig.Interval,
+			Config:   networkConfig,
 		}
 
 		// Parse private key or keystore
 		var privateKey *ecdsa.PrivateKey
-		var err error
 
 		if netConfig.PrivateKey != "" {
 			privateKey, err = parsePrivateKeyHex(netConfig.PrivateKey)
@@ -123,33 +101,48 @@ func loadMultiChainConfig(configPath string) (*config.MultiChainConfig, error) {
 
 // GenerateMultiChainConfig creates a sample configuration file
 func GenerateMultiChainConfig(outputPath string) error {
-	sampleConfig := MultiChainConfigFile{
+	sampleConfig := config.MultiChainConfigFile{
 		HTTPPort:        8080,
 		ProxyCount:      0,
 		HcaptchaSiteKey: "",
 		HcaptchaSecret:  "",
 		DefaultNetwork:  "sepolia",
-		Networks: []NetworkConfigFile{
+		Networks: []config.NetworkConfigFile{
 			{
-				Name:       "sepolia",
-				Provider:   "",                      // Will use default
-				PrivateKey: "0x1234567890abcdef...", // Replace with actual key
-				Payout:     1.0,
-				Interval:   1440,
+				Name:        "sepolia",
+				DisplayName: "Ethereum Sepolia",
+				ChainID:     11155111,
+				Symbol:      "ETH",
+				IsTestnet:   true,
+				Provider:    "https://sepolia.infura.io/v3/<api-key>",
+				ExplorerURL: "https://sepolia.etherscan.io/tx/",
+				PrivateKey:  "0x1234567890abcdef...", // Replace with actual key
+				Payout:      1.0,
+				Interval:    1440,
 			},
 			{
-				Name:       "polygon-mumbai",
-				Provider:   "",                      // Will use default
-				PrivateKey: "0x1234567890abcdef...", // Replace with actual key
-				Payout:     1.0,
-				Interval:   1440,
+				Name:        "polygon-amoy",
+				DisplayName: "Polygon Amoy",
+				ChainID:     80002,
+				Symbol:      "POL",
+				IsTestnet:   true,
+				Provider:    "https://rpc-amoy.polygon.technology",
+				ExplorerURL: "https://amoy.polygonscan.com/tx/",
+				PrivateKey:  "0x1234567890abcdef...",
+				Payout:      1.0,
+				Interval:    1440,
 			},
 			{
-				Name:       "bsc-testnet",
-				Provider:   "",                      // Will use default
-				PrivateKey: "0x1234567890abcdef...", // Replace with actual key
-				Payout:     0.1,
-				Interval:   1440,
+				Name:        "bsc-testnet",
+				DisplayName: "BSC Testnet",
+				ChainID:     97,
+				Symbol:      "BNB",
+				IsTestnet:   true,
+				Provider:    "https://data-seed-prebsc-1-s1.binance.org:8545",
+				ExplorerURL: "https://testnet.bscscan.com/tx/",
+				PrivateKey:  "0x1234567890abcdef...",
+				Payout:      0.1,
+				Interval:    1440,
 			},
 		},
 	}

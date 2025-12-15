@@ -30,6 +30,7 @@ type NetworkInfo struct {
 	Symbol    string `json:"symbol"`
 	ChainID   int64  `json:"chain_id"`
 	IsTestnet bool   `json:"is_testnet"`
+	Explorer  string `json:"explorer_url,omitempty"`
 }
 
 type infoResponse struct {
@@ -37,6 +38,8 @@ type infoResponse struct {
 	Network           string                 `json:"network"`
 	Payout            string                 `json:"payout"`
 	Symbol            string                 `json:"symbol"`
+	ChainID           int64                  `json:"chain_id,omitempty"`
+	Explorer          string                 `json:"explorer_url,omitempty"`
 	HcaptchaSiteKey   string                 `json:"hcaptcha_sitekey,omitempty"`
 	SupportedNetworks map[string]NetworkInfo `json:"supported_networks,omitempty"`
 }
@@ -48,6 +51,7 @@ type ActiveNetworkInfo struct {
 	IsTestnet bool   `json:"is_testnet"`
 	Account   string `json:"account"`
 	Payout    string `json:"payout"`
+	Explorer  string `json:"explorer_url,omitempty"`
 }
 
 type multiChainInfoResponse struct {

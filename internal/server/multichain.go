@@ -149,27 +149,16 @@ func (s *MultiChainServer) handleMultiChainInfo() http.HandlerFunc {
 				Symbol:    chainInstance.Config.Symbol,
 				ChainID:   chainInstance.Config.ChainID,
 				IsTestnet: chainInstance.Config.IsTestnet,
+				Explorer:  chainInstance.Config.ExplorerURL,
 				Account:   builder.Sender().String(),
 				Payout:    strconv.FormatFloat(chainInstance.Payout, 'f', -1, 64),
 			}
 		}
 
-		// Convert all supported networks to DTO format
-		supportedNetworks := make(map[string]NetworkInfo)
-		for name, netConfig := range config.GetSupportedNetworks() {
-			supportedNetworks[name] = NetworkInfo{
-				Name:      netConfig.Name,
-				Symbol:    netConfig.Symbol,
-				ChainID:   netConfig.ChainID,
-				IsTestnet: netConfig.IsTestnet,
-			}
-		}
-
 		resp := multiChainInfoResponse{
-			DefaultNetwork:    s.multiConfig.DefaultChain,
-			ActiveNetworks:    activeNetworks,
-			SupportedNetworks: supportedNetworks,
-			HcaptchaSiteKey:   s.multiConfig.HcaptchaSiteKey,
+			DefaultNetwork:  s.multiConfig.DefaultChain,
+			ActiveNetworks:  activeNetworks,
+			HcaptchaSiteKey: s.multiConfig.HcaptchaSiteKey,
 		}
 
 		renderJSON(w, resp, http.StatusOK)

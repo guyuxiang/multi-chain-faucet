@@ -35,6 +35,7 @@ type ChainConfigInput struct {
 	KeyPass    string
 	Payout     float64
 	Interval   int
+	Config     NetworkConfig
 }
 
 // NewMultiChainConfig creates a new multi-chain configuration
@@ -48,19 +49,18 @@ func NewMultiChainConfig() *MultiChainConfig {
 
 // AddChainWithKey adds a blockchain network with a parsed private key
 func (mc *MultiChainConfig) AddChainWithKey(input ChainConfigInput, privateKey *ecdsa.PrivateKey) error {
-	// Get network configuration
-	networkConfig, exists := GetNetworkByName(input.Network)
-	if !exists {
-		return fmt.Errorf("unsupported network: %s", input.Network)
+	networkConfig := input.Config
+	if networkConfig.Name == "" {
+		networkConfig.Name = input.Network
 	}
 
 	// Set provider (use default if not specified)
 	provider := input.Provider
 	if provider == "" {
 		provider = networkConfig.DefaultRPC
-		if provider == "" {
-			return fmt.Errorf("no provider specified and no default RPC for network %s", input.Network)
-		}
+	}
+	if provider == "" {
+		return fmt.Errorf("no provider specified for network %s", input.Network)
 	}
 
 	// Set default values

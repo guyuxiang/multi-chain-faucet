@@ -1,0 +1,48 @@
+{
+  "http_port": 8080,
+  "proxy_count": 0,
+  "networks": [
+    {
+      "name": "beetrust-uat",
+      "display_name": "BeeTrust UAT",
+      "chain_id": 0,
+      "symbol": "BEE",
+      "is_testnet": true,
+      "explorer_url": "",
+      "provider": "https://cso-bcnode-rpc.hrlyit.com",
+      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.5,
+      "interval": 1440
+    },
+    {
+      "name": "beetrust-live",
+      "display_name": "BeeTrust Mainnet",
+      "chain_id": 0,
+      "symbol": "BEE",
+      "is_testnet": false,
+      "explorer_url": "",
+      "provider": "https://beetrust-node.wellschain.com",
+      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.5,
+      "interval": 1440
+    },
+    {
+      "name": "baas-dev",
+      "display_name": "BaaS Dev",
+      "chain_id": 0,
+      "symbol": "BEE",
+      "is_testnet": true,
+      "explorer_url": "",
+      "provider": "https://web3-api.hrlyit.com/json-rpc/F6D7SWQ3FNK0/ad1aca702c444da0bccd78796974448e",
+      "private_key": "8db51d083b20254036ebc6b89e0b286982e8d71ce007e3c25ff084985f388492",
+      "keystore": "",
+      "key_pass": "",
+      "payout": 0.5,
+      "interval": 1440
+    }
+  ]
+}

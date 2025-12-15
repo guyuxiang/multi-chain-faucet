@@ -3,27 +3,14 @@
   "proxy_count": 0,
   "networks": [
     {
-      "name": "beetrust-uat",
-      "provider": "https://cso-bcnode-rpc.hrlyit.com",
-      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
-      "keystore": "",
-      "key_pass": "",
-      "payout": 0.5,
-      "interval": 1440
-    },
-    {
-      "name": "beetrust-live",
-      "provider": "https://beetrust-node.wellschain.com",
-      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
-      "keystore": "",
-      "key_pass": "",
-      "payout": 0.5,
-      "interval": 1440
-    },
-    {
-      "name": "baas-dev",
-      "provider": "https://web3-api.hrlyit.com/json-rpc/F6D7SWQ3FNK0/ad1aca702c444da0bccd78796974448e",
-      "private_key": "8db51d083b20254036ebc6b89e0b286982e8d71ce007e3c25ff084985f388492",
+      "name": "Monad",
+      "display_name": "Monad",
+      "chain_id": 10143,
+      "symbol": "MON",
+      "is_testnet": true,
+      "explorer_url": "https://testnet.monadvision.com/tx/",
+      "provider": "https://rpc.ankr.com/monad_testnet/ff613d2a19dced4608b9f6badad2d8a3331da84a1f0db2bf6b454803a65d0774",
+      "private_key": "e332a966d556c4e0bbfaf8fa9f480f0e2cbfdcdddffc0ac2872f39d4f5a70ed4",
       "keystore": "",
       "key_pass": "",
       "payout": 0.5,

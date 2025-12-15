@@ -11,7 +11,6 @@ import (
 	"github.com/urfave/negroni/v3"
 
 	"github.com/guyuxiang/multi-chain-faucet/internal/chain"
-	"github.com/guyuxiang/multi-chain-faucet/internal/config"
 	"github.com/guyuxiang/multi-chain-faucet/web"
 )
 
@@ -78,24 +77,15 @@ func (s *Server) handleInfo() http.HandlerFunc {
 			http.NotFound(w, r)
 			return
 		}
-		// Convert network configs to DTO format
-		supportedNetworks := make(map[string]NetworkInfo)
-		for name, netConfig := range config.GetSupportedNetworks() {
-			supportedNetworks[name] = NetworkInfo{
-				Name:      netConfig.Name,
-				Symbol:    netConfig.Symbol,
-				ChainID:   netConfig.ChainID,
-				IsTestnet: netConfig.IsTestnet,
-			}
-		}
 
 		renderJSON(w, infoResponse{
-			Account:           s.Sender().String(),
-			Network:           s.cfg.network,
-			Symbol:            s.cfg.symbol,
-			Payout:            strconv.FormatFloat(s.cfg.payout, 'f', -1, 64),
-			HcaptchaSiteKey:   s.cfg.hcaptchaSiteKey,
-			SupportedNetworks: supportedNetworks,
+			Account:         s.Sender().String(),
+			Network:         s.cfg.network,
+			ChainID:         s.cfg.chainID,
+			Explorer:        s.cfg.explorerURL,
+			Symbol:          s.cfg.symbol,
+			Payout:          strconv.FormatFloat(s.cfg.payout, 'f', -1, 64),
+			HcaptchaSiteKey: s.cfg.hcaptchaSiteKey,
 		}, http.StatusOK)
 	}
 }

@@ -20,9 +20,6 @@ import (
 var (
 	appVersion = "v1.2.0"
 
-	// Legacy chainIDMap for backward compatibility
-	chainIDMap = make(map[string]int)
-
 	httpPortFlag       = flag.Int("httpport", 8080, "Listener port to serve HTTP connection")
 	proxyCntFlag       = flag.Int("proxycount", 0, "Count of reverse proxies in front of the server")
 	versionFlag        = flag.Bool("version", false, "Print version number")
@@ -44,50 +41,45 @@ var (
 	hcaptchaSecretFlag  = flag.String("hcaptcha.secret", os.Getenv("HCAPTCHA_SECRET"), "hCaptcha secret")
 )
 
+const defaultMultiChainConfigPath = "multichain-config.json"
+
 // ListSupportedNetworks prints all supported networks (useful for CLI help)
-func ListSupportedNetworks() {
+func ListSupportedNetworks(configPath string) {
+	cfg, err := config.LoadMultiChainConfigFile(configPath)
+	if err != nil {
+		fmt.Printf("failed to load %s: %v\n", configPath, err)
+		return
+	}
+
 	fmt.Println("Supported networks:")
 	fmt.Println("==================")
 
-	categories := map[string][]string{
-		"Ethereum":  {"mainnet", "sepolia", "holesky", "goerli"},
-		"Polygon":   {"polygon", "polygon-mumbai", "polygon-amoy"},
-		"BSC":       {"bsc", "bsc-testnet"},
-		"Arbitrum":  {"arbitrum", "arbitrum-sepolia"},
-		"Optimism":  {"optimism", "optimism-sepolia"},
-		"Avalanche": {"avalanche", "avalanche-fuji"},
-		"Base":      {"base", "base-sepolia"},
-		"Fantom":    {"fantom", "fantom-testnet"},
-		"Linea":     {"linea", "linea-sepolia"},
-		"zkSync":    {"zksync", "zksync-sepolia"},
-	}
-
-	for category, networks := range categories {
-		fmt.Printf("\n%s:\n", category)
-		for _, networkName := range networks {
-			if networkConfig, exists := config.GetNetworkByName(networkName); exists {
-				testnetStr := ""
-				if networkConfig.IsTestnet {
-					testnetStr = " (Testnet)"
-				}
-				fmt.Printf("  %-20s - %s%s (Chain ID: %d, Symbol: %s)\n",
-					networkName, networkConfig.Name, testnetStr, networkConfig.ChainID, networkConfig.Symbol)
-			}
+	for _, network := range cfg.Networks {
+		testnetStr := ""
+		if network.IsTestnet {
+			testnetStr = " (Testnet)"
 		}
+		displayName := network.DisplayName
+		if displayName == "" {
+			displayName = network.Name
+		}
+		fmt.Printf("- %-20s %s%s (Chain ID: %d, Symbol: %s)\n",
+			network.Name, displayName, testnetStr, network.ChainID, network.Symbol)
 	}
 }
 
 func init() {
-	// Initialize legacy chainIDMap for backward compatibility
-	chainIDMap = config.GetChainIDMap()
-
 	flag.Parse()
 	if *versionFlag {
 		fmt.Println(appVersion)
 		os.Exit(0)
 	}
 	if *listNetworksFlag {
-		ListSupportedNetworks()
+		configPath := *multiChainFlag
+		if configPath == "" {
+			configPath = defaultMultiChainConfigPath
+		}
+		ListSupportedNetworks(configPath)
 		os.Exit(0)
 	}
 	if *generateConfigFlag {
@@ -104,38 +96,39 @@ func init() {
 }
 
 func Execute() {
+	networkName := strings.ToLower(*netnameFlag)
+	fileNetwork, err := loadNetworkFromConfig(networkName)
+	if err != nil {
+		panic(fmt.Errorf("failed to read network config: %w", err))
+	}
+
 	privateKey, err := getPrivateKeyFromFlags()
 	if err != nil {
 		panic(fmt.Errorf("failed to read private key: %w", err))
 	}
 
-	// Get network configuration
-	networkName := strings.ToLower(*netnameFlag)
-	networkConfig, exists := config.GetNetworkByName(networkName)
-
 	var chainID *big.Int
+	var chainIDValue int64
 	var symbol string
 	var displayName string
+	var explorerURL string
 
-	if exists {
-		chainID = big.NewInt(networkConfig.ChainID)
-		// Use network default symbol if not explicitly set via flag
-		if *symbolFlag == "ETH" { // Check if using default symbol
-			symbol = networkConfig.Symbol
+	if fileNetwork != nil {
+		if fileNetwork.ChainID != 0 {
+			chainID = big.NewInt(fileNetwork.ChainID)
+			chainIDValue = fileNetwork.ChainID
+		}
+		explorerURL = fileNetwork.ExplorerURL
+		displayName = fileNetwork.Name
+		if *symbolFlag == "ETH" {
+			symbol = fileNetwork.Symbol
 		} else {
 			symbol = *symbolFlag
 		}
-		displayName = networkConfig.Name
-
-		// Use default RPC if provider not set
 		if *providerFlag == "" {
-			*providerFlag = networkConfig.DefaultRPC
+			*providerFlag = fileNetwork.DefaultRPC
 		}
 	} else {
-		// Fallback to legacy behavior
-		if value, ok := chainIDMap[networkName]; ok {
-			chainID = big.NewInt(int64(value))
-		}
 		symbol = *symbolFlag
 		displayName = *netnameFlag
 	}
@@ -150,12 +143,34 @@ func Execute() {
 		panic(fmt.Errorf("cannot connect to web3 provider: %w", err))
 	}
 
-	config := server.NewConfig(displayName, symbol, *httpPortFlag, *intervalFlag, *proxyCntFlag, *payoutFlag, *hcaptchaSiteKeyFlag, *hcaptchaSecretFlag)
+	config := server.NewConfig(displayName, symbol, chainIDValue, explorerURL, *httpPortFlag, *intervalFlag, *proxyCntFlag, *payoutFlag, *hcaptchaSiteKeyFlag, *hcaptchaSecretFlag)
 	go server.NewServer(txBuilder, config).Run()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
+}
+
+func loadNetworkFromConfig(networkName string) (*config.NetworkConfig, error) {
+	cfg, err := config.LoadMultiChainConfigFile(defaultMultiChainConfigPath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	entry := config.FindNetworkInFile(cfg, networkName)
+	if entry == nil {
+		return nil, nil
+	}
+
+	networkCfg, err := config.BuildNetworkConfigFromFile(*entry)
+	if err != nil {
+		return nil, err
+	}
+
+	return &networkCfg, nil
 }
 
 func getPrivateKeyFromFlags() (*ecdsa.PrivateKey, error) {

@@ -107,7 +107,7 @@
         const txHashMatch = msg.match(/Txhash:\s*(0x[a-fA-F0-9]{64})/);
         if (txHashMatch) {
           const txHash = txHashMatch[1];
-          showTransactionSuccess(txHash, selectedNetwork);
+          showTransactionSuccess(txHash);
         } else {
           toast({ message: msg, type: 'is-success' });
         }
@@ -128,67 +128,28 @@
 
   // Network icon function removed for cleaner UI
   
-  function getExplorerUrl(network, txHash) {
-    const explorerUrls = {
-      'mainnet': 'https://etherscan.io/tx/',
-      'sepolia': 'https://sepolia.etherscan.io/tx/',  
-      'holesky': 'https://holesky.etherscan.io/tx/',
-      'goerli': 'https://goerli.etherscan.io/tx/',
-      
-      'polygon': 'https://polygonscan.com/tx/',
-      'polygon-mumbai': 'https://mumbai.polygonscan.com/tx/',
-      'polygon-amoy': 'https://amoy.polygonscan.com/tx/',
-      
-      'bsc': 'https://bscscan.com/tx/',
-      'bsc-testnet': 'https://testnet.bscscan.com/tx/',
-      
-      'arbitrum': 'https://arbiscan.io/tx/',
-      'arbitrum-sepolia': 'https://sepolia.arbiscan.io/tx/',
-      
-      'optimism': 'https://optimistic.etherscan.io/tx/',
-      'optimism-sepolia': 'https://sepolia-optimism.etherscan.io/tx/',
-      
-      'avalanche': 'https://snowtrace.io/tx/',
-      'avalanche-fuji': 'https://testnet.snowtrace.io/tx/',
-      
-      'base': 'https://basescan.org/tx/',
-      'base-sepolia': 'https://sepolia.basescan.org/tx/',
-      
-      'fantom': 'https://ftmscan.com/tx/',
-      'fantom-testnet': 'https://testnet.ftmscan.com/tx/',
-      
-      'linea': 'https://lineascan.build/tx/',
-      'linea-sepolia': 'https://sepolia.lineascan.build/tx/',
-      
-      'zksync': 'https://explorer.zksync.io/tx/',
-      'zksync-sepolia': 'https://sepolia.explorer.zksync.io/tx/'
-    };
-
-    const baseUrl = explorerUrls[network];
-    return baseUrl ? baseUrl + txHash : '#';
+  function getExplorerUrl(txHash) {
+    const baseUrl = currentNetwork.explorer_url;
+    if (!baseUrl) {
+      return '#';
+    }
+    return `${baseUrl}${txHash}`;
   }
 
-  function showTransactionSuccess(txHash, network) {
-    const explorerUrl = getExplorerUrl(network, txHash);
+  function showTransactionSuccess(txHash) {
+    const explorerUrl = getExplorerUrl(txHash);
     
-    if (explorerUrl !== '#') {
-      const message = `<a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" style="color: #00d1b2; text-decoration: underline;">${txHash}</a>`;
-      toast({ 
-        message, 
-        type: 'is-info', 
-        duration: 8000,
-        position: 'bottom-center',
-        className: 'custom-long-toast'
-      });
-    } else {
-      toast({ 
-        message: `<a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" style="color: #00d1b2; text-decoration: underline;">${txHash}</a>`,
-        type: 'is-info',
-        duration: 8000,
-        position: 'bottom-center',
-        className: 'custom-long-toast'
-      });
-    }
+    const message = explorerUrl !== '#'
+      ? `<a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" style="color: #00d1b2; text-decoration: underline;">${txHash}</a>`
+      : txHash;
+
+    toast({ 
+      message, 
+      type: 'is-info', 
+      duration: 8000,
+      position: 'bottom-center',
+      className: 'custom-long-toast'
+    });
   }
 </script>
 
