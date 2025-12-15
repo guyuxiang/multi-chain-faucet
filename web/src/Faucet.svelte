@@ -26,7 +26,7 @@
     hcaptchaLoaded = true;
   };
 
-  $: document.title = 'CSO FAUCET';
+  $: document.title = 'FAUCET';
 
   let widgetID;
   $: if (mounted && hcaptchaLoaded) {

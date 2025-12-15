@@ -29,7 +29,7 @@
 
   // Reactive statements
   $: currentNetwork = faucetInfo.active_networks[selectedNetwork] || {};
-  $: document.title = 'CSO FAUCET';
+  $: document.title = 'FAUCET';
 
   let widgetID;
   $: if (mounted && hcaptchaLoaded && faucetInfo.hcaptcha_sitekey) {
@@ -212,7 +212,7 @@
               <span class="icon">
                 <i class="fas fa-bath" />
               </span>
-              <span><b>CSO Faucet</b></span>
+              <span><b>Faucet</b></span>
             </a>
           </div>
           <div id="navbarMenu" class="navbar-menu">
@@ -228,7 +228,7 @@
       <div class="container has-text-centered">
         <div class="column is-8 is-offset-2">
           <h1 class="title">
-            CSO Faucet
+            Faucet
           </h1>
           <h2 class="subtitle">
             Get testnet tokens for multiple blockchain networks

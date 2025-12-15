@@ -1,35 +1,32 @@
 {
   "http_port": 8080,
   "proxy_count": 0,
-  "hcaptcha_sitekey": "",
-  "hcaptcha_secret": "",
-  "default_network": "linea-sepolia",
   "networks": [
     {
-      "name": "polygon-amoy",
-      "provider": "",
-      "private_key": "",
+      "name": "beetrust-uat",
+      "provider": "https://cso-bcnode-rpc.hrlyit.com",
+      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
       "keystore": "",
       "key_pass": "",
-      "payout": 0.1,
+      "payout": 0.5,
       "interval": 1440
     },
     {
-      "name": "sepolia",
-      "provider": "",
-      "private_key": "",
+      "name": "beetrust-live",
+      "provider": "https://beetrust-node.wellschain.com",
+      "private_key": "88cbead91aee890d27bf06e003ade3d4e952427e88f88d31d61d3ef5e5d54305",
       "keystore": "",
       "key_pass": "",
-      "payout": 0.05,
+      "payout": 0.5,
       "interval": 1440
     },
     {
-      "name": "linea-sepolia",
-      "provider": "",
-      "private_key": "",
+      "name": "baas-dev",
+      "provider": "https://web3-api.hrlyit.com/json-rpc/F6D7SWQ3FNK0/ad1aca702c444da0bccd78796974448e",
+      "private_key": "8db51d083b20254036ebc6b89e0b286982e8d71ce007e3c25ff084985f388492",
       "keystore": "",
       "key_pass": "",
-      "payout": 0.05,
+      "payout": 0.5,
       "interval": 1440
     }
   ]
