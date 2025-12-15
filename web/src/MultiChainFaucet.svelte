@@ -231,7 +231,7 @@
             Faucet
           </h1>
           <h2 class="subtitle">
-            Get testnet tokens for multiple blockchain networks
+            Get native tokens for multiple blockchain networks
           </h2>
 
           <div class="box">
