@@ -17,7 +17,7 @@ RUN mkdir -p /out \
     && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/multi-chain-faucet .
 
 # Runtime stage: only ship the binary and default config.
-FROM alpine:3.22
+FROM cgr.dev/chainguard/static:latest
 
 WORKDIR /app
 
