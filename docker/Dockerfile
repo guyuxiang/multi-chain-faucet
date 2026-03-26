@@ -21,8 +21,6 @@ FROM cgr.dev/chainguard/static:latest
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates
-
 COPY --from=builder /out/multi-chain-faucet /app/multi-chain-faucet
 COPY multichain-config.json /app/multichain-config.json
 
