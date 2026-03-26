@@ -11,7 +11,7 @@
   onMount(async () => {
     try {
       // Check if this is a multi-chain faucet by calling the info API
-      const res = await fetch('/api/info');
+      const res = await fetch('./api/info');
       const data = await res.json();
       
       // If response has active_networks, it's multi-chain mode

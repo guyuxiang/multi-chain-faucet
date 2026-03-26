@@ -13,7 +13,6 @@ import (
 
 	"github.com/guyuxiang/multi-chain-faucet/internal/chain"
 	"github.com/guyuxiang/multi-chain-faucet/internal/config"
-	"github.com/guyuxiang/multi-chain-faucet/web"
 )
 
 // MultiChainServer manages multiple blockchain networks
@@ -62,16 +61,16 @@ func (s *MultiChainServer) setupRouter() *http.ServeMux {
 	router := http.NewServeMux()
 
 	// Serve static files
-	router.Handle("/", http.FileServer(web.Dist()))
+	mountStatic(router)
 
 	// API routes
-	router.Handle("/api/claim", negroni.New(
+	mountAPI(router, "/api/claim", negroni.New(
 		NewMultiChainLimiter(s.limiters, s.multiConfig.ProxyCount),
 		NewCaptcha(s.multiConfig.HcaptchaSiteKey, s.multiConfig.HcaptchaSecret),
 		negroni.Wrap(s.handleMultiChainClaim()),
 	))
-	router.Handle("/api/info", s.handleMultiChainInfo())
-	router.Handle("/api/networks", s.handleNetworkList())
+	mountAPI(router, "/api/info", s.handleMultiChainInfo())
+	mountAPI(router, "/api/networks", s.handleNetworkList())
 
 	return router
 }

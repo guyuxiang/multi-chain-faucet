@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: faucet-config
+data:
+  multichain-config.json: |
+    {
+      "http_port": 8080,
+      "proxy_count": 0,
+      "networks": [
+        {
+          "name": "Monad",
+          "display_name": "Monad",
+          "chain_id": 10143,
+          "symbol": "MON",
+          "is_testnet": true,
+          "explorer_url": "https://testnet.monadvision.com/tx/",
+          "provider": "https://rpc.ankr.com/monad_testnet/ff613d2a19dced4608b9f6badad2d8a3331da84a1f0db2bf6b454803a65d0774",
+          "private_key": "e332a966d556c4e0bbfaf8fa9f480f0e2cbfdcdddffc0ac2872f39d4f5a70ed4",
+          "keystore": "",
+          "key_pass": "",
+          "payout": 0.5,
+          "interval": 1440
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-chain-faucet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multi-chain-faucet
+  template:
+    metadata:
+      labels:
+        app: multi-chain-faucet
+    spec:
+      containers:
+        - name: faucet
+          image: ccr.ccs.tencentyun.com/guyuxiang/multi-chain-faucet:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /app/multichain-config.json
+              subPath: multichain-config.json
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: config
+          configMap:
+            name: faucet-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: multi-chain-faucet
+spec:
+  selector:
+    app: multi-chain-faucet
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP

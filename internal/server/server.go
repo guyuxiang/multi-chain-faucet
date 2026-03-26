@@ -11,7 +11,6 @@ import (
 	"github.com/urfave/negroni/v3"
 
 	"github.com/guyuxiang/multi-chain-faucet/internal/chain"
-	"github.com/guyuxiang/multi-chain-faucet/web"
 )
 
 type Server struct {
@@ -28,11 +27,11 @@ func NewServer(builder chain.TxBuilder, cfg *Config) *Server {
 
 func (s *Server) setupRouter() *http.ServeMux {
 	router := http.NewServeMux()
-	router.Handle("/", http.FileServer(web.Dist()))
+	mountStatic(router)
 	limiter := NewLimiter(s.cfg.proxyCount, time.Duration(s.cfg.interval)*time.Minute)
 	hcaptcha := NewCaptcha(s.cfg.hcaptchaSiteKey, s.cfg.hcaptchaSecret)
-	router.Handle("/api/claim", negroni.New(limiter, hcaptcha, negroni.Wrap(s.handleClaim())))
-	router.Handle("/api/info", s.handleInfo())
+	mountAPI(router, "/api/claim", negroni.New(limiter, hcaptcha, negroni.Wrap(s.handleClaim())))
+	mountAPI(router, "/api/info", s.handleInfo())
 
 	return router
 }

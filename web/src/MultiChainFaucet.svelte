@@ -17,7 +17,7 @@
   let hcaptchaLoaded = false;
 
   onMount(async () => {
-    const res = await fetch('/api/info');
+    const res = await fetch('./api/info');
     faucetInfo = await res.json();
     selectedNetwork = faucetInfo.default_network;
     mounted = true;
@@ -91,7 +91,7 @@
         headers['h-captcha-response'] = response;
       }
 
-      const res = await fetch('/api/claim', {
+      const res = await fetch('./api/claim', {
         method: 'POST',
         headers,
         body: JSON.stringify({
