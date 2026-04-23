@@ -3,6 +3,7 @@
   import { getAddress } from '@ethersproject/address';
   import { CloudflareProvider } from '@ethersproject/providers';
   import { setDefaults as setToast, toast } from 'bulma-toast';
+  import { apiPath, appPath } from './lib/paths';
 
   let input = null;
   let selectedNetwork = '';
@@ -17,7 +18,7 @@
   let hcaptchaLoaded = false;
 
   onMount(async () => {
-    const res = await fetch('./api/info');
+    const res = await fetch(apiPath('info'));
     faucetInfo = await res.json();
     selectedNetwork = faucetInfo.default_network;
     mounted = true;
@@ -91,7 +92,7 @@
         headers['h-captcha-response'] = response;
       }
 
-      const res = await fetch('./api/claim', {
+      const res = await fetch(apiPath('claim'), {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -169,7 +170,7 @@
       <nav class="navbar">
         <div class="container">
           <div class="navbar-brand">
-            <a class="navbar-item" href="../..">
+            <a class="navbar-item" href={appPath()}>
               <span class="icon">
                 <i class="fas fa-bath" />
               </span>

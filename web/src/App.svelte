@@ -4,6 +4,7 @@
   import 'bulma/css/bulma.css';
   import Faucet from './Faucet.svelte';
   import MultiChainFaucet from './MultiChainFaucet.svelte';
+  import { apiPath } from './lib/paths';
 
   let isMultiChain = false;
   let loading = true;
@@ -11,7 +12,7 @@
   onMount(async () => {
     try {
       // Check if this is a multi-chain faucet by calling the info API
-      const res = await fetch('./api/info');
+      const res = await fetch(apiPath('info'));
       const data = await res.json();
       
       // If response has active_networks, it's multi-chain mode
